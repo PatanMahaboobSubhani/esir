@@ -1,0 +1,82 @@
+@import "tailwindcss";
+
+@theme {
+  --font-serif: var(--font-merriweather), serif;
+  --font-sans: var(--font-inter), sans-serif;
+
+  --color-primary: #4BA6B9;
+  --color-secondary: #0B1F3A;
+  --color-tertiary: #F1F1F1;
+  --color-muted-text: #555555;
+  --color-dark: #1A1A1A;
+}
+
+:root {
+  --background: #FFFFFF;
+  --foreground: #1A1A1A;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-inter), sans-serif;
+  line-height: 1.6;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-weight: 700;
+  color: inherit;
+  margin-bottom: 1rem;
+}
+
+.container {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+.section-padding {
+  padding-top: 80px;
+  padding-bottom: 80px;
+}
+
+.btn-primary {
+  background-color: #4BA6B9;
+  color: #FFFFFF;
+  padding: 0.75rem 1.75rem;
+  border-radius: 6px;
+  font-weight: 700;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.btn-primary:hover {
+  background-color: #3D8B9B;
+  box-shadow: 0 10px 15px -3px rgba(75, 166, 185, 0.4);
+}
+
+.card {
+  background-color: #FFFFFF;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+  border: 1px solid #F1F1F1;
+}
+
+.perspective-1000 {
+  perspective: 1000px;
+}
+
+.rotate-y-6 {
+  transform: rotateY(-6deg);
+}
+
+.hover\:rotate-y-6:hover {
+  transform: rotateY(0deg);
+}

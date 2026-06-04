@@ -1,0 +1,44 @@
+name: Deploy to Raspberry Pi
+
+# Trigger this workflow when the 'Build and Push Docker Image' workflow completes
+on:
+  workflow_run:
+    workflows: ["Build and Push Docker Image"]
+    types:
+      - completed
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+
+    steps:
+      - name: Set up SSH
+        uses: webfactory/ssh-agent@v0.8.1
+        with:
+          ssh-private-key: ${{ secrets.PI_SSH_KEY }}
+
+      - name: Deploy latest image to Raspberry Pi
+        run: |
+          PI_USER=pi                  # your Pi username
+          PI_HOST=192.168.1.12        # Pi IP or hostname
+          IMAGE=${{ secrets.DOCKERHUB_USERNAME }}/ipp-eisr_portal
+
+          ssh -o StrictHostKeyChecking=no $PI_USER@$PI_HOST << 'EOF'
+            set -e
+            echo "Pulling latest Docker image..."
+            docker pull ${IMAGE}:latest
+
+            echo "Stopping old container..."
+            docker stop eisr_production_portal || true
+            docker rm eisr_production_portal || true
+
+            echo "Starting new container..."
+            docker run -d \
+              --name eisr_production_portal \
+              --network cloudflare-net \
+              -p 3000:3000 \
+              -e NODE_ENV=production \
+              -e NEXT_TELEMETRY_DISABLED=1 \
+              ${IMAGE}:latest
+EOF

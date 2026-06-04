@@ -1,0 +1,54 @@
+services:
+  eisr_portal:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: eisr_production_portal
+    ports:
+      - "3000:3000"
+    restart: always
+    volumes:
+      - ./public/uploads:/app/public/uploads
+    environment:
+      - NODE_ENV=production
+      - NEXT_TELEMETRY_DISABLED=1
+      - JWT_SECRET=${JWT_SECRET}
+      - MYSQL_HOST=${MYSQL_HOST}
+      - MYSQL_PORT=${MYSQL_PORT:-3306}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - eisr_network
+
+  db:
+    image: mysql:8.0
+    container_name: eisr_mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    volumes:
+      - eisr_mysql_data:/var/lib/mysql
+      - ./mysql/init:/docker-entrypoint-initdb.d
+    ports:
+      - "3306:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 10s
+      retries: 10
+      interval: 5s
+    networks:
+      - eisr_network
+
+volumes:
+  eisr_mysql_data:
+
+networks:
+  eisr_network:
+    driver: bridge
